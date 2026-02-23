@@ -4,17 +4,22 @@ import streamlit_authenticator as stauth
 
 # --- 1. Security & Authentication Setup ---
 # This pulls the [credentials] and [cookie] sections from your Dashboard Secrets
+# --- 1. Security & Authentication Setup ---
 try:
-    authenticator = stauth.Authenticate(
-        st.secrets["credentials"],
-        st.secrets["cookie"]["name"],
-        st.secrets["cookie"]["key"],
-        st.secrets["cookie"]["expiry_days"]
-    )
-except KeyError as e:
-    st.error(f"Missing secret key: {e}. Check your Dashboard Settings!")
-    st.stop()
+    # Convert st.secrets to a real dict using .to_dict() 
+    # This prevents the "Secrets does not support item assignment" error
+    credentials = st.secrets["credentials"].to_dict()
+    cookie = st.secrets["cookie"].to_dict()
 
+    authenticator = stauth.Authenticate(
+        credentials,
+        cookie["name"],
+        cookie["key"],
+        int(cookie["expiry_days"]) # Ensure this is an integer
+    )
+except Exception as e:
+    st.error(f"Configuration Error: {e}")
+    st.stop()
 # Version-agnostic login call (handles v0.2.x and v0.3.x+)
 try:
     # Attempt newer version syntax
