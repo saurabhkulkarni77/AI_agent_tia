@@ -58,7 +58,7 @@ elif authentication_status:
         st.error("API Key missing in secrets!")
         st.stop()
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     st.title("🤖 Secured Siemens SCL Agent")
     
