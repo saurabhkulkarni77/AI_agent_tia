@@ -69,6 +69,6 @@ elif authentication_status:
     req = st.text_area("Describe the PLC Function (e.g., 'A toggle flip-flop for a light switch'):")
     if st.button("Generate SCL Code"):
         with st.spinner("Consulting AI..."):
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(f"Write Siemens TIA Portal SCL code for: {req}")
             st.code(response.text, language='pascal')
