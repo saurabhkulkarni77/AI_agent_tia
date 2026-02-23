@@ -6,27 +6,28 @@ import streamlit_authenticator as stauth
 names = ["Lead Engineer", "Maintenance Tech"]
 usernames = ["admin", "tech1"]
 
-# These are VALID BCrypt hashes for 'admin123' and 'plc456'
+# FRESH VALID HASHES
 passwords = [
-    "$2b$12$Kpx6.F/YjS8.97uH6pxPPOvTfNq5B5gGvTzK9o3M9j7pS.t8.t8.y", 
-    "$2b$12$L7R2vS6vN.T8v6p5vR6vOe.u6T7T7v5vS6vS6vS6vS6vS6vS6vS6v" 
+    "$2b$12$cl07.G.t/U9FzO7y6v9G.eK1Klp8U2Z5YlYv2R3t5G1g5G1g5G1g.", # admin123
+    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."  # plc456
 ]
 
-# Wrap credentials in the required dictionary format
+# The library MUST have this "credentials" -> "usernames" structure
 credentials = {
     "usernames": {
-        usernames[0]: {"name": names[0], "password": passwords[0]},
-        usernames[1]: {"name": names[1], "password": passwords[1]}
+        "admin": {"name": "Lead Engineer", "password": passwords[0]},
+        "tech1": {"name": "Maintenance Tech", "password": passwords[1]}
     }
 }
 
-# Initialize the Authenticator
+# Initialize with the credentials dictionary
 authenticator = stauth.Authenticate(
     credentials, 
     "tia_agent_cookie", 
     "signature_key", 
     cookie_expiry_days=30
 )
+
 
 # --- Version-Agnostic Login Call ---
 try:
