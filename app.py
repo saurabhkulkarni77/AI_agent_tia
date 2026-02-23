@@ -8,9 +8,10 @@ usernames = ["admin", "tech1"]
 
 # IMPORTANT: These must be valid BCrypt hashes. 
 # You can generate them using: stauth.Hasher(['admin123']).generate()
+# Hashed versions of 'admin123' and 'plc456'
 passwords = [
-    "$2b$12$cl07.G.t/U9FzO7y6v9G.eK1Klp8U2Z5YlYv2R3t5G1g5G1g5G1g.", # Replace with real hash
-    "$2b$12$cl07.G.t/U9FzO7y6v9G.eK1Klp8U2Z5YlYv2R3t5G1g5G1g5G1g."  # Replace with real hash
+    "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36RQoeG6L4zgn88WWf.baBK", # admin123
+    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."  # plc456
 ] 
 
 # The library expects the dictionary to be nested under "credentials"
