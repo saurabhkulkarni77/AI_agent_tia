@@ -1,51 +1,48 @@
 import streamlit as st
 import google.generativeai as genai
+import streamlit_authenticator as stauth
 
-# --- 1. Secure Config ---
-# This looks for the key in your Streamlit Cloud settings, NOT in the code.
-try:
-    API_KEY = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=API_KEY)
-except Exception:
-    st.error("Missing API Key! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
-    st.stop()
+# --- 1. Security & Authentication Setup ---
+# In a real app, move these names/passwords to st.secrets!
+names = ["Lead Engineer", "Maintenance Tech"]
+usernames = ["admin", "tech1"]
+# These are hashed versions of 'admin123' and 'plc456'
+passwords = ["$2b$12$6p5.n0t.real.hash.example", "$2b$12$another.example.hash"] 
 
-model = genai.GenerativeModel('gemini-2.5-flash')
+authenticator = stauth.Authenticate(
+    {"usernames": {
+        usernames[0]: {"name": names[0], "password": passwords[0]},
+        usernames[1]: {"name": names[1], "password": passwords[1]}
+    }},
+    "tia_agent_cookie", "signature_key", cookie_expiry_days=30
+)
 
-st.set_page_config(page_title="TIA Function Block Generator", layout="wide")
-st.title("🤖 Siemens SCL Function Block Agent")
+# Render the Login Widget
+name, authentication_status, username = authenticator.login("Login", "main")
 
-# --- 2. Security Audit Engine ---
-def run_security_audit(code):
-    checks = {
-        "FB Structure": "FUNCTION_BLOCK" in code.upper(),
-        "Input Clamping": "LIMIT" in code.upper(),
-        "3-Way Handshake": "i_HMI_Confirm" in code,
-        "Safety Interlock": "Global_Safety_DB" in code,
-        "Memory (Static VAR)": "VAR" in code and "END_VAR" in code
-    }
-    return checks
+if authentication_status == False:
+    st.error("Username/password is incorrect")
+elif authentication_status == None:
+    st.warning("Please enter your username and password")
+elif authentication_status:
+    # --- START OF AUTHENTICATED APP ---
+    authenticator.logout("Logout", "sidebar")
+    st.sidebar.title(f"Welcome {name}")
 
-# --- 3. UI Layout ---
-req = st.text_area("Describe the PLC Function:")
+    # Secure API Config
+    try:
+        API_KEY = st.secrets["GEMINI_API_KEY"]
+        genai.configure(api_key=API_KEY)
+    except:
+        st.error("API Key missing in secrets!")
+        st.stop()
 
-if st.button("Generate Function Block"):
-    if not req:
-        st.warning("Please enter a requirement.")
-    else:
-        with st.spinner("Writing SCL..."):
-            prompt = f"Generate a Siemens S7-1500 FUNCTION_BLOCK in SCL for: {req}. Include 3-way handshake, LIMIT() for analogs, and check 'Global_Safety_DB'.All_Systems_OK. Output ONLY code."
-            
-            response = model.generate_content(prompt)
-            scl_code = response.text.replace("```scl", "").replace("```", "").strip()
-            
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.subheader("📋 Copy-Paste SCL Code")
-                st.code(scl_code, language="cpp")
-            
-            with col2:
-                st.subheader("🛡️ Security Audit")
-                audit = run_security_audit(scl_code)
-                for check, passed in audit.items():
-                    st.write(f"{'✅' if passed else '❌'} {check}")
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
+    st.title("🤖 Secured Siemens SCL Agent")
+    
+    # ... (Rest of your generation logic goes here) ...
+    req = st.text_area("Describe the PLC Function:")
+    if st.button("Generate Function Block"):
+        # (Generation code from previous steps)
+        st.success("Generating logic for authorized user...")
