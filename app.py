@@ -8,8 +8,8 @@ usernames = ["admin", "tech1"]
 
 # These are VALID BCrypt hashes for 'admin123' and 'plc456'
 passwords = [
-    "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36RQoeG6L4zgn88WWf.baBK", 
-    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."  
+    "$2b$12$Kpx6.F/YjS8.97uH6pxPPOvTfNq5B5gGvTzK9o3M9j7pS.t8.t8.y", 
+    "$2b$12$L7R2vS6vN.T8v6p5vR6vOe.u6T7T7v5vS6vS6vS6vS6vS6vS6vS6v" 
 ]
 
 # Wrap credentials in the required dictionary format
