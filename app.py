@@ -17,8 +17,8 @@ authenticator = stauth.Authenticate(
     "tia_agent_cookie", "signature_key", cookie_expiry_days=30
 )
 
-# Render the Login Widget
-name, authentication_status, username = authenticator.login("Login", "main")
+# Use the 'location' keyword argument explicitly
+name, authentication_status, username = authenticator.login(label="Login", location="main")
 
 if authentication_status == False:
     st.error("Username/password is incorrect")
