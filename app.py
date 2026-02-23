@@ -3,7 +3,7 @@ import google.generativeai as genai
 
 # --- 1. Agent Config ---
 # Ensure you use your valid API Key
-genai.configure(api_key="AIzaSyCQKkhKIJAwFk9BPOVa-I30oStleV106AA")
+genai.configure(api_key="")
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 st.set_page_config(page_title="TIA Function Block Generator", layout="wide")
