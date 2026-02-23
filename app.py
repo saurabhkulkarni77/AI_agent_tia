@@ -10,7 +10,7 @@ except Exception:
     st.error("Missing API Key! Please add 'GEMINI_API_KEY' to your Streamlit Secrets.")
     st.stop()
 
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 st.set_page_config(page_title="TIA Function Block Generator", layout="wide")
 st.title("🤖 Siemens SCL Function Block Agent")
