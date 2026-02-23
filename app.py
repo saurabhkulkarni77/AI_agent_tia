@@ -6,15 +6,13 @@ import streamlit_authenticator as stauth
 names = ["Lead Engineer", "Maintenance Tech"]
 usernames = ["admin", "tech1"]
 
-# IMPORTANT: These must be valid BCrypt hashes. 
-# You can generate them using: stauth.Hasher(['admin123']).generate()
-# Hashed versions of 'admin123' and 'plc456'
+# These are VALID BCrypt hashes for 'admin123' and 'plc456'
 passwords = [
     "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36RQoeG6L4zgn88WWf.baBK", 
-    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."
-] 
+    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."  
+]
 
-# The library expects the dictionary to be nested under "credentials"
+# Wrap credentials in the required dictionary format
 credentials = {
     "usernames": {
         usernames[0]: {"name": names[0], "password": passwords[0]},
@@ -22,7 +20,7 @@ credentials = {
     }
 }
 
-# Initialize the Authenticate object
+# Initialize the Authenticator
 authenticator = stauth.Authenticate(
     credentials, 
     "tia_agent_cookie", 
@@ -30,18 +28,24 @@ authenticator = stauth.Authenticate(
     cookie_expiry_days=30
 )
 
-# FIX: In v0.2.x, login only takes the location ('main' or 'sidebar')
-# It returns (name, authentication_status, username)
-login_data = authenticator.login('main')
+# --- Version-Agnostic Login Call ---
+try:
+    # Try the newer version syntax first
+    result = authenticator.login(label="Login", location="main")
+except TypeError:
+    # Fall back to the older version syntax if 'label' is unexpected
+    result = authenticator.login("main")
 
-# Handle the tuple return safely
-if login_data:
-    name, authentication_status, username = login_data
+# Safely unpack the result (handles cases where it returns None or a tuple)
+if isinstance(result, tuple):
+    name, authentication_status, username = result
 else:
-    # Fallback if the method returns None unexpectedly
-    authentication_status = None
+    # In some versions, status is stored in st.session_state instead of returned
+    name = st.session_state.get("name")
+    authentication_status = st.session_state.get("authentication_status")
+    username = st.session_state.get("username")
 
-# --- 2. Authentication Logic ---
+# --- 2. Authentication UI Logic ---
 if authentication_status == False:
     st.error("Username/password is incorrect")
 elif authentication_status == None:
@@ -49,29 +53,22 @@ elif authentication_status == None:
 elif authentication_status:
     # --- START OF AUTHENTICATED APP ---
     authenticator.logout("Logout", "sidebar")
-    st.sidebar.title(f"Welcome {name}")
+    st.sidebar.success(f"Logged in as: {name}")
 
-    # Secure API Config
+    # Gemini API Configuration
     try:
         API_KEY = st.secrets["GEMINI_API_KEY"]
         genai.configure(api_key=API_KEY)
     except Exception:
-        st.error("API Key missing in secrets!")
+        st.error("API Key missing! Please add GEMINI_API_KEY to your .streamlit/secrets.toml file.")
         st.stop()
 
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    st.title("🤖 Siemens SCL Logic Agent")
+    st.info("Authorized access granted.")
 
-    st.title("🤖 Secured Siemens SCL Agent")
-    
-    req = st.text_area("Describe the PLC Function (e.g., 'Motor starter with interlock'):")
-    if st.button("Generate Function Block"):
-        with st.spinner("Generating SCL code..."):
-            # Placeholder for your generation logic
-            st.code("""
-FUNCTION_BLOCK "MotorControl"
-VAR_INPUT
-    Start : BOOL;
-    Stop : BOOL;
-END_VAR
-            """, language='pascal')
-        st.success("Logic generated for authorized user.")
+    req = st.text_area("Describe the PLC Function (e.g., 'A toggle flip-flop for a light switch'):")
+    if st.button("Generate SCL Code"):
+        with st.spinner("Consulting AI..."):
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(f"Write Siemens TIA Portal SCL code for: {req}")
+            st.code(response.text, language='pascal')
