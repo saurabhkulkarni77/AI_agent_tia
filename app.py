@@ -10,8 +10,8 @@ usernames = ["admin", "tech1"]
 # You can generate them using: stauth.Hasher(['admin123']).generate()
 # Hashed versions of 'admin123' and 'plc456'
 passwords = [
-    "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36RQoeG6L4zgn88WWf.baBK", # admin123
-    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."  # plc456
+    "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36RQoeG6L4zgn88WWf.baBK", 
+    "$2b$12$8v.pXp6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p6p."
 ] 
 
 # The library expects the dictionary to be nested under "credentials"
